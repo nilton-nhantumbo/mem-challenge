@@ -19,7 +19,7 @@ module.exports = {
   mode,
   entry: {
     polyfill: '@babel/polyfill',
-    main: path.resolve(__dirname, 'app', 'main'),
+    main: path.resolve(__dirname, 'src', 'main'),
   },
   output: {
     path: path.resolve(__dirname, 'build'),
@@ -32,7 +32,7 @@ module.exports = {
       'vue$': isDevMode
         ? 'vue/dist/vue.runtime.js'
         : 'vue/dist/vue.runtime.min.js',
-      '@': path.resolve(__dirname, 'app'),
+      '@': path.resolve(__dirname, 'src'),
     },
   },
   module: {
