@@ -1,4 +1,8 @@
-import Vue from 'vue'
+import Vue from 'vue';
+import RamView from './Ram.component';
 
-//Ram Components
-Vue.component('ram-view', require('./Ram.component').default);
+//Including Ram Components
+import './components';
+
+//Ram Main View
+Vue.component('ram-view', RamView);

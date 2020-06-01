@@ -2,6 +2,7 @@ const path = require('path'),
   webpack = require('webpack'),
   HtmlWebpackPlugin = require('html-webpack-plugin'),
   MiniCssExtractPlugin = require('mini-css-extract-plugin'),
+  DirectoryNamedWebpackPlugin = require('directory-named-webpack-plugin'),
   VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 //Resolve path to an absolute path
@@ -22,7 +23,7 @@ module.exports = {
     main: path.resolve(__dirname, 'src', 'main'),
   },
   output: {
-    path: path.resolve(__dirname, 'build'),
+    path: path.resolve(__dirname, 'dist'),
     filename: '[name].bundle.js',
   },
   devtool: 'source-map',
@@ -33,6 +34,8 @@ module.exports = {
         ? 'vue/dist/vue.runtime.js'
         : 'vue/dist/vue.runtime.min.js',
       '@': path.resolve(__dirname, 'src'),
+      'Shared': path.join(__dirname, 'src/shared/'),
+      'App': path.join(__dirname, 'src/'),
     },
   },
   module: {
@@ -82,7 +85,7 @@ module.exports = {
     ],
   },
   devServer: {
-    contentBase: './build',
+    contentBase: './dist',
   },
   plugins: [
     new HtmlWebpackPlugin({

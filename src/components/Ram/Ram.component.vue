@@ -1,16 +1,29 @@
 <template>
-  <div>
-    <p class="pp">World!</p>
+  <div class="ramContainer">
+    <memory-block
+      data-url="https://gitlab.com/mem-challenge/json/-/raw/master/RAM.json"
+    />
   </div>
 </template>
 
 <script>
 export default {
-  data() {
+  data: function () {
     return {
-      greeting: 'Hello',
+      mounted: false,
     };
   },
+  props: {
+    tipo: {
+      default: 'sucesso',
+    },
+  },
+
+  mounted() {
+    let self = this;
+  },
+  methods: {},
+  computed: {},
 };
 </script>
 
