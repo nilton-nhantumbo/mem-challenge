@@ -1,5 +1,14 @@
-module.exports = {
+﻿module.exports = {
   presets: [
-    '@vue/cli-plugin-babel/preset'
-  ]
-}
+    [
+      '@babel/preset-env',
+
+      {
+        useBuiltIns: 'entry',
+        targets: {
+        browsers: ['> 1%', 'last 2 versions', 'not ie <= 8', 'ie >= 11'],
+        },
+      },
+    ],
+  ],
+};
