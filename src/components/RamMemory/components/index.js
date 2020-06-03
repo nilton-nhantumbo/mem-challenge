@@ -1,10 +1,9 @@
 import Vue from 'vue';
-import MemoryRegionView from './Region.component';
-import MemoryRegionBlockView from './RegionBlock.component';
-import MemoryRegionContentView from './RegionContent.component';
+import MemoryRegionView from './RegionView';
+import MemoryRegionBlockView from './RegionBlockView';
+import MemoryRegionContentView from './RegionContentView';
 
 //Ram Components
-
 /*---Simple Region*/
 Vue.component('memory-region', MemoryRegionView);
 

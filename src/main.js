@@ -12,7 +12,7 @@ Vue.prototype.BoardUtils = boardUtils;
 Vue.config.devtools = true;
 //https: Vue.config.productionTip = false;
 //if no js file name occurs then it will look for index.js.
-require('./components/ram');
+require('./components/RamMemory');
 
 new Vue({
   render: (h) => h(App),

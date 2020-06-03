@@ -49,7 +49,7 @@ export default {
           let data = response.data;
           self.label = data.label;
           self.totalBytes = data.bytes;
-          self.regions = response.data.regios;
+          self.regions = response.data.regions;
           self.setTableStructure(self.maxCols);
           self.boardManager = new self.BoardUtils(
             self.boardContainerId,
