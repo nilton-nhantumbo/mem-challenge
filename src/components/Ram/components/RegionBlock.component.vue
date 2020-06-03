@@ -1,10 +1,6 @@
 <template>
   <div class="ramRegionBlock">
-    <table>
-      <tr v-for="(quantity, key) in getRows" :key="key">
-        <td v-for="(quantity, key) in getCols" :key="key"></td>
-      </tr>
-    </table>
+    <div :id="boardContainerId"></div>
   </div>
 </template>
 
@@ -19,6 +15,9 @@ export default {
       rows: 0,
       totalBytes: 0,
       maxCols: 0,
+      boardContainerId: 'boardContainer',
+      cellsMatrix: [],
+      boardManager: [],
     };
   },
 
@@ -36,6 +35,7 @@ export default {
   mounted() {
     let self = this;
     self.maxCols = self.colsLimit;
+    self.boardContainerId = boardContainer + Math.random();
     self.getMemoryBloks();
   },
   methods: {
@@ -45,17 +45,32 @@ export default {
       self.Axios.get(url)
         .then(function (response) {
           // handling success
-          console.log(response);
+          //console.log(response);
           let data = response.data;
           self.label = data.label;
           self.totalBytes = data.bytes;
           self.regions = response.data.regios;
           self.setTableStructure(self.maxCols);
+          self.boardManager = new self.BoardUtils(
+            self.boardContainerId,
+            self.rows,
+            self.cols,
+            24,
+          );
+          self.boardManager.drawBoard();
         })
         .catch(function (error) {
           // handling error
           console.log(error);
         });
+    },
+    fillMatrixCells(cellPositionArray) {
+      let self = this;
+      var cellsMatrix = self.cellsMatrix;
+      self.cellsMatrix.push(cellPositionArray);
+      // if (cellsMatrix && cellsMatrix.length < 1) {
+
+      // }
     },
     setTableStructure(maxCols) {
       let self = this;
@@ -72,21 +87,34 @@ export default {
       if (cols > 0 && rows > 0 && cols > rows) {
         self.cols = cols;
         self.rows = rows;
-        console.log(cols);
+        //console.log(cols);
       } else {
-        maxCols = maxCols + 1;
-        self.setTableStructure(maxCols);
+        self.setTableStructure(maxCols + 1);
       }
+    },
+    fillRegionsSpace() {
+      let regions = self.regions;
+
+      regions.forEach((region) => {});
     },
   },
   computed: {
-    getCols() {
+    listMatrix() {
       let self = this;
-      return self.cols;
-    },
-    getRows() {
-      let self = this;
-      return self.rows;
+      var cellsList = [];
+      let cols = self.cols;
+      let rows = self.rows;
+      for (var row = 1; row <= rows; row++) {
+        for (var col = 1; col <= cols; col++) {
+          cellsList.push([row, col]);
+        }
+      }
+      var cellsListMatrix = self.Utils.listToMatrix(cellsList, cols);
+      self.cellsMatrix = cellsListMatrix;
+
+      //console.log( self.cellsMatrix);
+
+      return cellsListMatrix;
     },
   },
 };
