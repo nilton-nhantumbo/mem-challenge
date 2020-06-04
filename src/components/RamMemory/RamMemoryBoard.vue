@@ -40,29 +40,7 @@ export default {
   },
   methods: {
     getMemoryBloks() {
-      let self = this;
-      let url = self.dataUrl;
-      self.Axios.get(url)
-        .then(function (response) {
-          // handling success
-          //console.log(response);
-          let data = response.data;
-          self.label = data.label;
-          self.totalBytes = data.bytes;
-          self.regions = response.data.regions;
-          self.setTableStructure(self.maxCols);
-          self.boardManager = new self.BoardUtils(
-            self.boardContainerId,
-            self.rows,
-            self.cols,
-            24,
-          );
-          self.boardManager.drawBoard();
-        })
-        .catch(function (error) {
-          // handling error
-          console.log(error);
-        });
+     
     },
     fillMatrixCells(cellPositionArray) {
       let self = this;
@@ -92,42 +70,8 @@ export default {
         self.setTableStructure(maxCols + 1);
       }
     },
-    fillRegionsSpace() {
-      let regions = self.regions;
-
-      regions.forEach((region) => {});
-    },
   },
-  computed: {
-    listMatrix() {
-      let self = this;
-      var cellsList = [];
-      let cols = self.cols;
-      let rows = self.rows;
-      for (var row = 1; row <= rows; row++) {
-        for (var col = 1; col <= cols; col++) {
-          cellsList.push([row, col]);
-        }
-      }
-      var cellsListMatrix = self.Utils.listToMatrix(cellsList, cols);
-      self.cellsMatrix = cellsListMatrix;
-
-      //console.log( self.cellsMatrix);
-
-      return cellsListMatrix;
-    },
-  },
+  computed: {},
 };
 </script>
-<style lang="css" scoped>
-table {
-  table-layout: fixed;
-  border-collapse: collapse;
-}
-table td {
-  width: 20px;
-  height: 20px;
-  overflow: hidden;
-  border: 1px solid black;
-}
-</style>
+<style lang="css" scoped></style>

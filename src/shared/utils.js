@@ -18,6 +18,16 @@ class appUtils {
 }
 
 //Canvas Utils
+const Cell_Side_Moves = {
+  LEFT: 0,
+  TOP: 1,
+  RIGHT: 2,
+  BOTTOM: 3,
+  TOP_LEFT: 4,
+  TOP_RIGHT: 5,
+  BOTTOM_RIGHT: 6,
+  BOTTOM_LEFT: 7,
+};
 
 class boardUtils {
   constructor(containerId, rows, cols, squareSize) {
@@ -44,10 +54,10 @@ class boardUtils {
     self.VACANT = '#FFFFFF';
 
     self.DATA_TYPES_COLORS = {
-      string: '#72B317',
-      boolean: '#A00ABD',
-      block: '#FF0000',
-      integer: '#EEC78F',
+      string: '#acc73e',
+      boolean: '#3e8cc7',
+      block: '#c73e5b',
+      integer: '#f5bc4c',
     };
 
     self.isBoardEmpty = true;
@@ -63,8 +73,6 @@ class boardUtils {
     let paddingAdjustRatio = 0.9;
 
     let SQ = self.SQ;
-    //self.ctx.strokeStyle = 'cyan';
-    //self.ctx.strokeRect(x * SQ, y * SQ, SQ, SQ);
 
     self.ctx.globalCompositeOperation = 'destination-over';
     self.ctx.fillStyle = color;
@@ -75,124 +83,169 @@ class boardUtils {
       SQ + paddingAdjustRatio,
     );
   }
+  drawSquareStroke(x, y, color) {
+    let self = this;
+
+    let paddingAdjustRatio = 0.9;
+
+    self.ctx.globalCompositeOperation = 'destination-over';
+    let SQ = self.SQ;
+
+    self.ctx.strokeStyle = color;
+    self.ctx.lineWidth = 0.25;
+    self.ctx.strokeRect(x * SQ, y * SQ, SQ, SQ);
+  }
 
   // draw a polygon
-  drawPolygon(region) {
+  allocateRegionToMemory(region) {
     let self = this;
     let SQ = self.SQ;
     let cells = region.bytes;
     let ctx = self.ctx;
-    self.ctx.beginPath();
-    //var regionMatrixData = self.getAvailableMatrix(cells);
+    //self.ctx.beginPath();
+    var regionMatrixData = self.generateMatrix(cells);
     let color = self.DATA_TYPES_COLORS[region.dataType];
+    let regionMatrix = regionMatrixData.matrix;
+    console.log(regionMatrixData);
+    if (regionMatrixData && regionMatrix && regionMatrix.length > 0) {
+      let avaialableCellX = regionMatrixData.colIndex;
+      let avaialableCellY = regionMatrixData.rowIndex;
+      let marginCase = 1;
+      for (var r = 0; r < regionMatrix.length; r++) {
+        let cols = regionMatrix[r].length;
+        for (var c = 0; c < cols; c++) {
+          self.board[r + avaialableCellY][c + avaialableCellX] = 1;
+          self.drawSquare(avaialableCellX + c, avaialableCellY + r, color);
+          if (
+            (r == 0 && c == 0) ||
+            (r == 0 && c == cols - 1) ||
+            (r == regionMatrix.length - 1 && c == 0) ||
+            (r == regionMatrix.length - 1 && c == cols - 1)
+          ) {
+            self.createRegionMargin(
+              marginCase,
+              r + avaialableCellY,
+              c + avaialableCellX,
+            );
+            marginCase++;
+          }
+        }
+      }
+      this.drawText(
+        region.label,
+        regionMatrix,
+        avaialableCellX,
+        avaialableCellY,
+      );
+    }
+  }
 
-    // if (!regionMatrixData) {
-    //   let regionMatrix = regionMatrixData.matrix;
+  drawText(label, regionMatrix, lastX, lastY) {
+    let self = this;
+    let SQ = self.SQ;
 
-    //   let avaialableCellX = regionMatrixData.colIndex;
-    //   let avaialableCellY = regionMatrixData.rowIndex;
+    self.ctx.font = '14px Arial';
+    self.ctx.textAlign = 'center';
+    self.ctx.fillStyle = self.isBoardEmpty ? '#FFFF' : '#FFF';
+    let regionMatrixLength = regionMatrix.length;
+    self.ctx.globalCompositeOperation = 'source-over';
+    let textPosX = (regionMatrix[0].length * SQ) / 2.0;
+    let textPosY = (SQ / 2 + regionMatrixLength * SQ) / 2.0;
+    textPosX = lastX * SQ + textPosX;
+    textPosY = lastY * SQ + textPosY;
+    console.log('X ' + textPosX + ' Y ' + textPosY + ' ' + label);
+    self.ctx.fillText(label, textPosX, textPosY);
+  }
 
-    //   for (var r = 0; r < regionMatrix.length; r++) {
-    //     let cols = regionMatrix[r].length;
-    //     for (var c = 0; c < cols; c++) {
-    //       self.board[r + avaialableCellY][c + avaialableCellX] = 1;
-    //       self.drawSquare(avaialableCellX + c, avaialableCellY + r, color);
-    //     }
-    //   }
-    // } else {
-    let regionMatrix = self.generateAlternativeMatrix(cells);
-    let avaialableCellX = regionMatrix[0][1];
-    let avaialableCellY = regionMatrix[0][0];
-    console.log(regionMatrix);
-    // console.log('cx ' + avaialableCellX + ' cy ' + avaialableCellY);
-    for (var r = 0; r < regionMatrix.length; r++) {
-      for (var c = 0; c < regionMatrix.length; c++) {
-        let x = regionMatrix[r][1];
-        let y = regionMatrix[r][0];
-        self.board[y][x] = 1;
-        self.drawSquare(x, y, color);
+  createRegionMargin(marginCase, row, col) {
+    let self = this;
+    var cellMoveX = 0;
+    var cellMoveY = 0;
+    switch (marginCase) {
+      case 1:
+        cellMoveX = col - 2;
+        cellMoveY = row - 2;
+        if (self.isCellAvailable(cellMoveY, cellMoveY)) {
+          self.board[cellMoveY][cellMoveX] = 2;
+        }
+      case 2:
+        cellMoveX = col + 1;
+        cellMoveY = row - 2;
+        if (self.isCellAvailable(cellMoveY, cellMoveY)) {
+          self.board[cellMoveY][cellMoveX] = 2;
+        }
+        break;
+      case 3:
+        cellMoveX = col + 1;
+        cellMoveY = row + 1;
+        if (self.isCellAvailable(cellMoveY, cellMoveY)) {
+          self.board[cellMoveY][cellMoveX] = 2;
+        }
+        cellMoveX = col - 1;
+        cellMoveY = row + 1;
+        if (self.isCellAvailable(cellMoveY, cellMoveY)) {
+          self.board[cellMoveY][cellMoveX] = 2;
+        }
+        cellMoveY = row + 1;
+        if (self.isCellAvailable(cellMoveY, cellMoveY)) {
+          self.board[cellMoveY][col] = 1;
+        }
+        cellMoveX = col - 1
+        if (self.isCellAvailable(cellMoveY, cellMoveY)) {
+          self.board[row][cellMoveX] = 2;
+        }
+        break;
+      case 4:
+        cellMoveX = col + 1;
+        cellMoveY = row + 1;
+        if (self.isCellAvailable(cellMoveY, cellMoveY)) {
+          self.board[cellMoveY][cellMoveX] = 2;
+        }
+        cellMoveY = row + 2;
+        if (self.isCellAvailable(cellMoveY, cellMoveY)) {
+          self.board[cellMoveY][col] = 2;
+        }
+        break;
+    }
+  }
+
+  isMemoryFull() {
+    let self = this;
+    return self.getNumberOfAvailableCells() === 0;
+  }
+
+  getNumberOfAvailableCells() {
+    let self = this;
+    var count = 0;
+    for (var r = 0; r < self.board.length; r++) {
+      for (var c = 0; c < self.board[r].length; c++) {
+        if (self.board[r][c] == 0) {
+          count++;
+        }
       }
     }
-    // }
-    self.ctx.closePath();
+    return count;
   }
 
-  drawText() {
-    // self.ctx.font = '16px Arial';
-    // self.ctx.textAlign = 'center';
-    //   self.ctx.fillStyle = self.isBoardEmpty ? '#FFFF' : '#FFF';
-
-    //   let regionMatrixLength = regionMatrix.length;
-
-    //   let textPosX = (regionMatrix[0].length * SQ) / 2.0;
-    //   let textPosY = (SQ / 2 + regionMatrixLength * SQ) / 2.0;
-    //   textPosX = textPosX + lastX;
-    //   textPosY = textPosY + lastY;
-    //   console.log('X ' + textPosX + ' Y ' + textPosY);
-    //   self.ctx.fillText(region.label, textPosX, textPosY);
-    self.ctx.globalCompositeOperation = 'destination-over';
-
-    //   if (!self.isBoardEmpty) {
-    //  //   self.ctx.globalCompositeOperation = 'destination-over';
-    //     self.hasZindex = true;
-    //   }
-  }
-
-  generateAlternativeMatrix(cells) {
+  generateMatrix(cells) {
     let self = this;
-    let freeCell = self.getAvailableCell();
-    var freeRowIndex = freeCell[0];
-    var freeColIndex = freeCell[1];
+    var dividers = self.getBytesDividers(cells);
+    var matrix = [];
+    if (dividers && dividers.length > 0) {
+      for (var d = 0; d < dividers.length; d++) {
+        matrix = self.getFreeRegion(dividers[d], cells);
+        if (matrix) break;
+      }
+    }
 
-    var matrix = [freeCell];
-
-    //Move Right
-    for (var i = 1; i < cells; i++) {
-      for (var j = 0; j < 4; j++) {
-        if (j === 1) {
-          //Cell move Right
-          var cellMoveX = freeColIndex + 1;
-          if (
-            self.isCellAvailable(freeRowIndex, cellMoveX) &&
-            !self.isCellinMatrix(matrix, freeRowIndex, cellMoveX)
-          ) {
-            freeColIndex = cellMoveX;
-            matrix.push([freeRowIndex, freeColIndex]);
-            break;
-          }
-        } else if (j === 0) {
-          //Cell move Top
-          var cellMoveY = freeRowIndex - 1;
-          if (
-            self.isCellAvailable(cellMoveY, freeColIndex) &&
-            !self.isCellinMatrix(matrix, cellMoveY, freeColIndex)
-          ) {
-            freeRowIndex = cellMoveY;
-            matrix.push([freeRowIndex, freeColIndex]);
-            break;
-          }
-        } else if (j === 2) {
-          //Cell move Left
-          var cellMoveX = freeColIndex - 1;
-          if (
-            self.isCellAvailable(freeRowIndex, cellMoveX) &&
-            !self.isCellinMatrix(matrix, freeRowIndex, cellMoveX)
-          ) {
-            freeColIndex = cellMoveX;
-            matrix.push([freeRowIndex, freeColIndex]);
-            break;
-          }
-        } else if (j === 3) {
-          //Cell move Bottom
-          var cellMoveY = freeRowIndex + 1;
-          if (
-            self.isCellAvailable(cellMoveY, freeColIndex) &&
-            !self.isCellinMatrix(matrix, cellMoveY, freeColIndex)
-          ) {
-            freeRowIndex = cellMoveY;
-            matrix.push([freeRowIndex, freeColIndex]);
-            break;
-          }
+    if (!dividers || !matrix || dividers.length < 1 || matrix.length < 1) {
+      let maxRetries = self.ROWS * self.COLS;
+      var matrix;
+      for (var i = 0; i < maxRetries; i++) {
+        let divider = self.getRandomBytesDivider(cells);
+        matrix = self.getFreeRegion(divider, cells);
+        if (matrix) {
+          return matrix;
         }
       }
     }
@@ -200,38 +253,23 @@ class boardUtils {
     return matrix;
   }
 
-  isCellinMatrix(matrix, row, col) {
+  getFreeRegion(colsLimit, cells) {
     let self = this;
-    for (var r = 0; r < matrix.length; r++) {
-      if (matrix[r][0] === row && matrix[r][1] === col) {
-        return true;
+    for (var r = 0; r < self.board.length; r++) {
+      for (var c = 0; c < self.board[r].length; c++) {
+        if (self.board[r][c] == 0) {
+          var mat = self.getRegionMatrixOnMemory(colsLimit, cells, r, c + 1);
+          if (mat) return mat;
+        }
       }
     }
-    return false;
-  }
-  getAvailableMatrix(cells) {
-    let self = this;
-    let maxRetries = self.ROWS * self.COLS;
-    var matrix;
-    for (var i = 0; i < maxRetries; i++) {
-      matrix = self.generateAcceptableMatrix(cells);
-      if (matrix) {
-        return matrix;
-      }
-    }
-    return matrix;
+    return [];
   }
 
-  generateAcceptableMatrix(cells) {
+  getRegionMatrixOnMemory(divider, cells, freeRowIndex, freeColIndex) {
     let self = this;
     let cellsArray = Array(cells).fill(1);
-
-    let randomMatrixCols = self.getRandomMatrixCols(cells);
-    let regionMatrix = appUtils.listToMatrix(cellsArray, randomMatrixCols);
-
-    let freeCell = self.getAvailableCell();
-    let freeRowIndex = freeCell[0];
-    let freeColIndex = freeCell[1];
+    let regionMatrix = appUtils.listToMatrix(cellsArray, divider);
 
     for (var r = 0; r < regionMatrix.length; r++) {
       for (var c = 0; c < regionMatrix[r].length; c++) {
@@ -254,36 +292,38 @@ class boardUtils {
     };
   }
 
-  getRandomMatrixCols(matCols) {
+  getBytesDividers(matCols) {
+    let self = this;
+    var dividers = [];
+    let boardRegionColsLimit = self.COLS / 2;
+
+    for (var i = boardRegionColsLimit; i >= 1; i--) {
+      if (i * i == matCols) {
+        dividers.push(i);
+      }
+    }
+
+    for (var i = boardRegionColsLimit; i > 1; i--) {
+      if (matCols % i == 0) {
+        if (dividers.filter((x) => x !== i)) dividers.push(i);
+      }
+    }
+
+    return dividers;
+  }
+
+  getRandomBytesDivider(matCols) {
     let self = this;
     let boardRegionColsLimit = self.COLS / 2;
     let randomLimit = matCols > 3 ? matCols / 2 : matCols;
     randomLimit =
       randomLimit > boardRegionColsLimit ? boardRegionColsLimit : randomLimit;
 
-    var result = 0;
-
-    for (var i = boardRegionColsLimit; i > 0; i--) {
-      if (i * i == matCols) {
-        return i;
-      }
-    }
-
-    if (result == 0) {
-      for (var i = boardRegionColsLimit; i > 1; i--) {
-        var moodle = matCols % i == 0;
-        if (matCols / moodle < self.maxAcceptedRowIndex && moodle == 0) {
-          console.log(i);
-          return i;
-        }
-      }
-    }
-    if (result == 0) {
-      var o = self.getRndInteger(3, randomLimit);
-      return o;
-    }
+    var o = self.getRndInteger(3, randomLimit);
+    return o;
   }
-  getAvailableCell() {
+
+  getRandomAvailableCell() {
     let self = this;
     for (var r = 0; r < self.ROWS * self.SQ; r++) {
       let randomRowIndex = self.getRndInteger(0, self.ROWS - 1);
@@ -298,8 +338,10 @@ class boardUtils {
   isCellAvailable(rowIndex, colIndex) {
     let self = this;
     return (
-      rowIndex < self.maxAcceptedRowIndex &&
-      colIndex < self.maxAcceptedColIndex &&
+      rowIndex >= 0 &&
+      colIndex >= 0 &&
+      rowIndex <= self.maxAcceptedRowIndex &&
+      colIndex <= self.maxAcceptedColIndex &&
       self.board[rowIndex] &&
       self.board[rowIndex][colIndex] === 0
     );
@@ -318,39 +360,59 @@ class boardUtils {
       }
     }
 
-    this.drawPolygon({label: 'Alfa', dataType: 'integer', bytes: 4});
-    this.drawPolygon({label: 'Kilo', dataType: 'boolean', bytes: 1});
-    this.drawPolygon({label: 'Bravo', dataType: 'string', bytes: 40});
-    this.drawPolygon({label: 'Foxrit', dataType: 'string', bytes: 29});
-    this.drawPolygon({label: 'Tango', dataType: 'string', bytes: 70});
-    this.drawPolygon({label: 'Charlie', dataType: 'block', bytes: 358});
+    this.allocateRegionToMemory({label: 'Kilo', dataType: 'boolean', bytes: 1});
+    this.allocateRegionToMemory({label: 'Alfa', dataType: 'integer', bytes: 4});
+    this.allocateRegionToMemory({
+      label: 'Foxrit',
+      dataType: 'string',
+      bytes: 29,
+    });
+    this.allocateRegionToMemory({
+      label: 'Bravo',
+      dataType: 'string',
+      bytes: 40,
+    });
+    this.allocateRegionToMemory({
+      label: 'Tango',
+      dataType: 'string',
+      bytes: 70,
+    });
+    this.allocateRegionToMemory({
+      label: 'Zone-1',
+      dataType: 'block',
+      bytes: 150,
+    });
+    this.allocateRegionToMemory({
+      label: 'Zone-2',
+      dataType: 'block',
+      bytes: 244,
+    });
+    this.allocateRegionToMemory({
+      label: 'Counter',
+      dataType: 'integer',
+      bytes: 4,
+    });
+    this.allocateRegionToMemory({
+      label: 'Phrase',
+      dataType: 'string',
+      bytes: 35,
+    });
+    this.allocateRegionToMemory({
+      label: 'Zone-4',
+      dataType: 'block',
+      bytes: 110,
+    });
   }
 
   // draw the board
-  drawBoard2() {
+  drawBoard() {
     let self = this;
     for (var r = 0; r < self.ROWS; r++) {
       for (var c = 0; c < self.COLS; c++) {
-        self.drawSquare(c, r, self.VACANT);
+        self.drawSquareStroke(c, r, 'BLACK');
+        //  self.drawSquare(c, r, self.VACANT);
       }
     }
-  }
-  drawBoard() {
-    let self = this;
-    let bw = self.SQ * self.COLS;
-    let bh = self.SQ * self.ROWS;
-    for (var x = 0; x <= bw; x += self.SQ) {
-      self.ctx.moveTo(0.5 + x, 0);
-      self.ctx.lineTo(0.5 + x, bh);
-    }
-
-    for (var y = 0; y <= bh; y += self.SQ) {
-      self.ctx.moveTo(0, 0.5 + y);
-      self.ctx.lineTo(bw, 0.5 + y);
-    }
-
-    self.ctx.strokeStyle = 'black';
-    self.ctx.stroke();
   }
 }
 export {appUtils, boardUtils};
