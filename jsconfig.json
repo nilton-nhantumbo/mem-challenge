@@ -4,9 +4,11 @@
     "module": "commonjs",
     "baseUrl": ".",
     "paths": {
+      "App/*": ["./src/*"],
+      "Assets/*": ["./src/assets/*"],
       "Components/*": ["./src/components/*"],
       "Shared/*": ["./src/shared/*"],
-      "App/*": ["./src/*"]
+      "Services/*": ["./src/services/*"]
     }
   },
   "exclude": ["node_modules", "dist"]

@@ -35,6 +35,8 @@ module.exports = {
         : 'vue/dist/vue.runtime.min.js',
       '@': path.resolve(__dirname, 'src'),
       'Shared': path.join(__dirname, 'src/shared/'),
+      'Services': path.join(__dirname, 'src/services/'),
+      'Assets': path.join(__dirname, 'src/assets/'),
       'App': path.join(__dirname, 'src/'),
     },
   },
