@@ -46,7 +46,7 @@ export default {
       self.ApiService.getRamRegions(self.dataUrl)
         .then((data) => {
           setTimeout(() => {
-            console.log(data);
+            // console.log(data);
             self.sendDataToRam(data);
             self.isLoading = false;
           }, 4000);
@@ -70,12 +70,13 @@ export default {
 <style lang="css" scoped>
 .ramMainView {
   display: flex;
+  width: 100%;
 }
 .ramDataView {
   display: block;
   position: relative;
-  align-items: center;
-  align-content: center;
+  text-align: center;
+  width: 100%;
 }
 
 .topnav {
@@ -83,8 +84,6 @@ export default {
   height: 56px;
   width: 100%;
   background-color: #ffffff;
-  /* margin: 24px; */
-  margin-bottom: 24px;
   box-shadow: 0px 1px 2px 1px rgba(0, 0, 0, 0.1);
   position: relative;
 }
@@ -94,6 +93,7 @@ export default {
   text-align: center;
   align-items: center;
   justify-content: center;
+  float: left;
 }
 .logoNav .text {
   font-family: 'Roboto';
@@ -109,8 +109,16 @@ export default {
   display: block;
   align-content: center;
   justify-content: center;
+  padding-top: 24px;
 }
 .ramBoardView {
   position: relative;
+}
+
+canvas {
+  z-index: 8;
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 </style>

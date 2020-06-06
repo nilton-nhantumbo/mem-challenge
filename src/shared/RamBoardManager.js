@@ -13,6 +13,7 @@ class RamBoardManager {
     self.createRamBoardStructure(32);
     self.createRamDataBoard();
     self.allocateRegions(ramData.data.regions);
+    self.addCanvasRegionsListener();
   }
 
   initRamBoard(containerId, ramData, squareSize) {
@@ -24,6 +25,7 @@ class RamBoardManager {
       block: '#c73e5b',
       integer: '#f5bc4c',
     };
+    self.canvas;
     self.ramData = ramData;
     self.totalBytes = ramData.data.bytes;
     self.board = [];
@@ -42,12 +44,12 @@ class RamBoardManager {
 
     canvas.id = 'canvas_' + containerId;
     canvas.width = 920;
-    canvas.height = 920;
-    canvas.style.zIndex = 8;
-    canvas.style.position = 'relative';
+    canvas.height = 720;
+    // canvas.style.zIndex = 8;
+    // canvas.style.position = 'relative';
     container.appendChild(canvas);
 
-    self.canvas = document.getElementById(canvas.Id);
+    self.canvas = canvas;
     self.ctx = canvas.getContext('2d');
   }
 
@@ -122,7 +124,7 @@ class RamBoardManager {
     let SQ = self.SQ;
 
     self.ctx.strokeStyle = color;
-    self.ctx.lineWidth = 0.23;
+    self.ctx.lineWidth = 0.22;
     self.ctx.strokeRect(x * SQ, y * SQ, SQ, SQ);
   }
   // draw the board
@@ -130,7 +132,7 @@ class RamBoardManager {
     let self = this;
     for (var r = 0; r < self.ROWS; r++) {
       for (var c = 0; c < self.COLS; c++) {
-        self.drawSquareStroke(c, r, '#7e9191');
+        self.drawSquareStroke(c, r, '#bfbfbf');
       }
     }
   }
@@ -385,6 +387,46 @@ class RamBoardManager {
       self.board[rowIndex] &&
       self.board[rowIndex][colIndex] === 0
     );
+  }
+
+  addCanvasRegionsListener() {
+    let self = this;
+    let SQ = self.SQ;
+    self.canvas.addEventListener('mousemove', (evt) => {
+      // clear the canvas
+      //c.clearRect(200, 0, cw, ch);
+      var mouse = self.onMousePos(self.canvas, evt);
+      //for each rect in the rects array
+      for (var r = 0; r < self.board.length; r++) {
+        for (var c = 0; c < self.board[r].length; c++) {
+          if (self.board[r][c] == 1) {
+            self.ctx.beginPath();
+            // draw the rect
+            self.ctx.rect(c * SQ, r * SQ, SQ, SQ);
+            // if thr mouse is inside the rect
+            if (self.ctx.isPointInPath(mouse.x, mouse.y)) {
+              self.drawSquare(c, r, 'Black');
+              console.log('x ' + mouse.x, ' y ' + mouse.y);
+            } else {
+              // self.board = [];
+
+              self.ctx.clearRect(0, 0, self.canvas.width, self.canvas.height);
+              self.drawBoard();
+              // self.createRamDataBoard();
+              // self.allocateRegions(self.ramData.data.regions);
+            }
+          }
+        }
+      }
+    });
+  }
+  // a function to detect the mouse position on the canvas
+  onMousePos(canvas, evt) {
+    var ClientRect = canvas.getBoundingClientRect();
+    return {
+      x: Math.round(evt.clientX - ClientRect.left),
+      y: Math.round(evt.clientY - ClientRect.top),
+    };
   }
 }
 export default RamBoardManager;
