@@ -103,7 +103,7 @@ export default {
   margin-left: 16px;
 }
 .logoNav .logo {
-  width: 46px;
+  width: 42px;
 }
 .ramBoardViewContainer {
   display: block;
