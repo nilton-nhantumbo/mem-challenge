@@ -5,10 +5,7 @@ class ApiService {
 
   createGetRequest(url) {
     let self = this;
-    var request = self.axiosService
-      .get(url)
-      .then((result) => result.data)
-      .catch((error) => error);
+    var request = self.axiosService.get(url).then((result) => result.data);
 
     return request;
   }
@@ -25,11 +22,13 @@ class ApiService {
       return fillRegionsRequests;
     });
 
-    return Promise.all([ramDataTypesRequest, ramRegionsRequest]).then(
+    let result = Promise.all([ramDataTypesRequest, ramRegionsRequest]).then(
       (result) => {
         return (RamData = {dataTypes: result[0], data: result[1]});
       },
     );
+
+    return result;
   }
 
   getRamRegionDataTypes() {

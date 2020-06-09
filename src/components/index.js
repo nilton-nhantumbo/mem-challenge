@@ -1,2 +1,2 @@
-require('./ramMemoryProfiler');
+require('./ramMemory');
 require('./common');

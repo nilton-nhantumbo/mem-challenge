@@ -2,36 +2,31 @@
   <div id="notfound">
     <div class="notfound">
       <div class="notfound-404">
-        <h1>:(</h1>
+        <app-error-icon />
       </div>
       <h2>Ooops...</h2>
       <p>
-        Something went we couldn't fetch data
+        Something went wrong, We couldn't get Memory data
       </p>
-      <a href="#">Try Again</a>
+      <a href="#" v-on:click="reloadPage()">Try Again</a>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  methods: {
+    reloadPage() {
+      _eventBus.$emit('fetch-mem-data');
+    },
+  },
+};
 </script>
 <style lang="css" scoped>
-
-
-* {
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-body {
-  padding: 0;
-  margin: 0;
-}
-
 #notfound {
   position: relative;
   height: 100vh;
+  width: 100vw;
 }
 
 #notfound .notfound {
@@ -58,21 +53,6 @@ body {
   height: 150px;
 }
 
-.notfound .notfound-404 h1 {
-  font-family: 'Passion One', cursive;
-  color: #00b5c3;
-  font-size: 150px;
-  letter-spacing: 15.5px;
-  margin: 0px;
-  font-weight: 900;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-}
-
 .notfound h2 {
   font-family: 'Raleway', sans-serif;
   color: #292929;
@@ -83,7 +63,7 @@ body {
   margin-top: 0;
 }
 
-.notfound p {
+.notfound a {
   font-family: 'Raleway', sans-serif;
   font-size: 14px;
   font-weight: 400;

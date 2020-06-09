@@ -4,6 +4,10 @@
       class="loadingView"
       v-show="isLoading && !hasErrorLoading"
     />
+    <error-page-view
+      class="loadingView"
+      v-show="!isLoading && hasErrorLoading"
+    />
     <div class="ramContentView" v-show="!isLoading && !hasErrorLoading">
       <div class="topnav">
         <div class="logoNav">
@@ -29,7 +33,10 @@
         </div>
         <div class="ramRegionsDataTypes">
           <p class="dataTypesTitle">Data Types</p>
-          <ul v-if="dataTypes" class="dataTypeslist">
+          <ul
+            v-if="dataTypes && !isLoading && !hasErrorLoading"
+            class="dataTypeslist"
+          >
             <li
               class="listItem"
               v-for="(dataType, dkey) in dataTypes"
@@ -72,7 +79,6 @@ export default {
       ramSize: 0,
       isLoading: true,
       hasErrorLoading: false,
-      boardManager: [],
     };
   },
 
@@ -85,7 +91,7 @@ export default {
   mounted() {
     let self = this;
     self.fetchRamData();
-    self.boardManager = self.ramBoardManager;
+    self.onRetryFetchData();
   },
   methods: {
     fetchRamData() {
@@ -94,15 +100,16 @@ export default {
         self.ApiService.getRamRegions(self.dataUrl)
           .then((data) => {
             setTimeout(() => {
-              // console.log(data);
-              self.sendDataToRam(data);
-              self.isLoading = false;
+              if (data) {
+                self.sendDataToRam(data);
+                self.isLoading = false;
+              }
             }, 4000);
           })
           .catch(
             (error) => (
-              console.log(error),
-              (self.errorLoading = true),
+              console.log('Request Error' + error),
+              (self.hasErrorLoading = true),
               (self.isLoading = false)
             ),
           );
@@ -113,6 +120,15 @@ export default {
       self.ramSize = ramData.data.bytes;
       self.dataTypes = ramData.dataTypes;
       _eventBus.$emit('ram-data-fetched', ramData);
+    },
+    onRetryFetchData() {
+      let self = this;
+
+      _eventBus.$on('fetch-mem-data', () => {
+        self.isLoading = true;
+        self.hasErrorLoading = false;
+        self.fetchRamData();
+      });
     },
   },
   computed: {},
