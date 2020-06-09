@@ -6,10 +6,9 @@
       color="#00b5c8"
       size="76"
     />
-    <h2 class="loadingTitle">Please wait!</h2>
-    <p class="loadingSubTitle">We're getting things ready...</p>
+    <p class="loadingSubTitle">Getting Memory Data...</p>
     <div class="footer">
-      <ram-icon class="ramIcon" />
+      <app-logo-icon class="ramIcon" />
       <span class="creator">Developed by: </span
       ><span class="creatorName"> Nilton Nhantumbo</span>
     </div>
@@ -36,9 +35,9 @@ export default {};
   position: relative;
   left: 48vw;
 }
-.loadingTitle {
-  margin-top: 24px;
-  font-size: 28px;
+.loadingSubTitle {
+  margin-top: 28px;
+  font-size: 18px;
 }
 .footer {
   display: flex;

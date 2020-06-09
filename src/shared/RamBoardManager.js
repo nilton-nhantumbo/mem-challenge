@@ -1,4 +1,10 @@
 import appUtils from './utils';
+const DATA_TYPES_COLORS = {
+  string: '#acc73e',
+  boolean: '#3e8cc7',
+  block: '#c73e5b',
+  integer: '#f5bc4c',
+};
 class RamBoardManager {
   constructor(containerId, ramData, squareSize) {
     let self = this;
@@ -14,17 +20,13 @@ class RamBoardManager {
     self.drawMemoryBoard();
     self.allocateRegions(ramData.data.regions);
     self.addCanvasRegionsListener();
+    self.allocateOtherMemoryRegions();
   }
 
   initRamBoard(containerId, ramData, squareSize) {
     let self = this;
     //intializing variables
-    self.DATA_TYPES_COLORS = {
-      string: '#acc73e',
-      boolean: '#3e8cc7',
-      block: '#c73e5b',
-      integer: '#f5bc4c',
-    };
+    self.DATA_TYPES_COLORS = DATA_TYPES_COLORS;
     self.allocatedRegions = [];
     self.canvas;
     self.ramData = ramData;
@@ -38,13 +40,19 @@ class RamBoardManager {
     self.initCanvasBoard(containerId);
   }
 
+  static getColorByDataType(dataType) {
+    let self = this;
+    let color = DATA_TYPES_COLORS[dataType];
+    return color;
+  }
+
   initCanvasBoard(containerId) {
     let self = this;
     let container = document.getElementById(containerId);
     var canvas = document.createElement('canvas');
 
     canvas.id = 'canvas_' + containerId;
-    canvas.width = 1280;
+    canvas.width = 980;
     canvas.height = 720;
     container.appendChild(canvas);
 
@@ -86,9 +94,9 @@ class RamBoardManager {
     self.drawBoard();
   }
 
-  allocateRegions(regions) {
+  allocateRegions(regions, canShuffle = false) {
     let self = this;
-    // console.log(regions[0].data);
+    if (canShuffle) regions = self.changeMemoryRegionsPositions(regions);
     // self.allocateRegionCellsToMemory(regions[0]);
     regions.forEach((region) => {
       self.allocateRegionBytesToMemory(region);
@@ -98,7 +106,6 @@ class RamBoardManager {
     });
   }
 
-  // draw a polygon
   allocateRegionBytesToMemory(region) {
     let self = this;
     let SQ = self.SQ;
@@ -108,9 +115,6 @@ class RamBoardManager {
 
     var lastX = 0;
     var lastY = 0;
-
-    var textRowSize = 0;
-    var textColSize = 0;
 
     var regionMatrixData = self.generateMatrix(cells);
     let color = self.DATA_TYPES_COLORS[region.dataType];
@@ -163,6 +167,23 @@ class RamBoardManager {
         labelPosY: textPos.y,
       });
     }
+  }
+
+  changeMemoryRegionsPositions(regions) {
+    let self = this;
+    return appUtils.shuffleArray(regions);
+  }
+
+  allocateOtherMemoryRegions() {
+    let self = this;
+
+    setInterval(() => {
+      self.board = [];
+      self.allocatedRegions = [];
+      self.ctx.clearRect(0, 0, self.canvas.width, self.canvas.height);
+      self.drawMemoryBoard();
+      self.allocateRegions(self.ramData.data.regions, true);
+    }, 8000);
   }
 
   isMemoryFull() {
@@ -394,6 +415,9 @@ class RamBoardManager {
     let self = this;
     let SQ = self.SQ;
     self.canvas.addEventListener('mousemove', (evt) => {
+      self.ctx.clearRect(0, 0, self.canvas.width, self.canvas.height);
+      self.drawBoard();
+      self.drawAllocatedRegions();
       var mouse = self.onMousePos(self.canvas, evt);
       //for loop of each allocated region
       for (var r = 0; r < self.board.length; r++) {
@@ -404,9 +428,6 @@ class RamBoardManager {
           self.ctx.rect(c * SQ, r * SQ, SQ, SQ);
           // if thr mouse is inside the rect
           if (self.ctx.isPointInPath(mouse.x, mouse.y)) {
-            self.ctx.clearRect(0, 0, self.canvas.width, self.canvas.height);
-            self.drawBoard();
-            self.drawAllocatedRegions();
             hoveredRegion = self.getAllocatedRegion(c, r);
             if (hoveredRegion) {
               let color = appUtils.pSBC(

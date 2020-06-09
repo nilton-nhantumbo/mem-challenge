@@ -2,7 +2,6 @@ const path = require('path'),
   webpack = require('webpack'),
   HtmlWebpackPlugin = require('html-webpack-plugin'),
   MiniCssExtractPlugin = require('mini-css-extract-plugin'),
-  DirectoryNamedWebpackPlugin = require('directory-named-webpack-plugin'),
   VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 //Resolve path to an absolute path
