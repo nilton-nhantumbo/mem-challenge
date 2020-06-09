@@ -62,6 +62,7 @@
 
 <script>
 export default {
+  name: 'ram-main-view',
   data: function () {
     return {
       mounted: false,
@@ -89,21 +90,22 @@ export default {
   methods: {
     fetchRamData() {
       let self = this;
-      self.ApiService.getRamRegions(self.dataUrl)
-        .then((data) => {
-          setTimeout(() => {
-            // console.log(data);
-            self.sendDataToRam(data);
-            self.isLoading = false;
-          }, 4000);
-        })
-        .catch(
-          (error) => (
-            console.log(error),
-            (self.errorLoading = true),
-            (self.isLoading = false)
-          ),
-        );
+      if (self.ApiService)
+        self.ApiService.getRamRegions(self.dataUrl)
+          .then((data) => {
+            setTimeout(() => {
+              // console.log(data);
+              self.sendDataToRam(data);
+              self.isLoading = false;
+            }, 4000);
+          })
+          .catch(
+            (error) => (
+              console.log(error),
+              (self.errorLoading = true),
+              (self.isLoading = false)
+            ),
+          );
     },
     sendDataToRam(ramData) {
       let self = this;

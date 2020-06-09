@@ -2,14 +2,15 @@
   "name": "mem-challenge",
   "version": "1.0.0",
   "description": "Web app that's used to visualize the data that is held in memory by the Java application.",
-  "main": "index.js",
+  "author": "Nilton Nhantumbo",
   "scripts": {
-    "watch": "webpack --watch",
-    "start": "webpack-dev-server --open",
-    "devbuild": "webpack --mode development",
     "build": "webpack --mode production",
-    "test": "jest"
+    "devbuild": "webpack --mode development",
+    "start": "webpack-dev-server --open",
+    "test": "jest",
+    "watch": "webpack --watch"
   },
+  "main": "main.js",
   "dependencies": {
     "@babel/polyfill": "~7.2",
     "core-js": "^3.6.5",
@@ -24,6 +25,7 @@
     "@babel/plugin-syntax-dynamic-import": "~7.2",
     "@babel/plugin-syntax-import-meta": "~7.2",
     "@babel/preset-env": "~7.3",
+    "@vue/cli-plugin-unit-jest": "^4.4.1",
     "@vue/test-utils": "^1.0.3",
     "axios": "^0.19.2",
     "babel-jest": "^26.0.1",
@@ -57,9 +59,6 @@
     "webpack-hot-middleware": "~2.24",
     "webpack-merge": "~4.2"
   },
-  "keywords": [],
-  "author": "Nilton Nhantumbo",
-  "license": "ISC",
   "jest": {
     "moduleFileExtensions": [
       "js",
@@ -72,6 +71,12 @@
     },
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1"
-    }
-  }
+    },
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/.history/"
+    ]
+  },
+  "keywords": [],
+  "license": "ISC"
 }
