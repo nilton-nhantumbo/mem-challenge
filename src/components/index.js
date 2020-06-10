@@ -1,2 +1,0 @@
-require('./ramMemory');
-require('./common');

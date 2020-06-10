@@ -1,11 +1,20 @@
+import axios from 'axios';
 class ApiService {
-  constructor(axiosService) {
-    this.axiosService = axiosService;
+  constructor() {
+    axios.defaults.crossdomain = true;
+    axios.defaults.withCredentials = false;
+
+    this.axiosService = axios;
   }
 
   createGetRequest(url) {
     let self = this;
-    var request = self.axiosService.get(url).then((result) => result.data);
+    //enabling proxy-server because to bypass Cors errors of gitlab
+    let proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+    //url = proxyUrl + url;
+    var request = self.axiosService
+      .get(url, {crossdomain: true})
+      .then((result) => result.data);
 
     return request;
   }

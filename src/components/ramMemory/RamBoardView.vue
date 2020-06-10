@@ -5,6 +5,14 @@
 </template>
 
 <script>
+import MainLoadingView from '../common/MainLoadingView';
+
+//BoardManager
+import RamBoardManager from '../../shared/RamBoardManager';
+
+//event bus
+import _eventBus from '../../shared/event-bus';
+
 export default {
   data: function () {
     return {
@@ -13,14 +21,14 @@ export default {
       totalBytes: 0,
       maxCols: 0,
       boardContainerId: 'boardContainer',
-      boardManager: [],
+      boardManager: {},
     };
   },
 
   props: {},
   mounted() {
     let self = this;
-    self.boardContainerId = boardContainer + Math.random();
+    self.boardContainerId = 'boardContainer' + Math.random();
     self.initDataFetcher();
   },
   methods: {
@@ -33,7 +41,7 @@ export default {
     startProfiling(regions) {
       let self = this;
       //    console.log(regions);
-      self.boardManager = new self.ramBoardManager(
+      self.boardManager = new RamBoardManager(
         self.boardContainerId,
         regions,
         24,

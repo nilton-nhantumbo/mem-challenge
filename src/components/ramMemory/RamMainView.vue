@@ -1,17 +1,14 @@
 <template>
   <div class="ramMainView">
-    <main-loading-view
+    <MainLoadingView
       class="loadingView"
       v-show="isLoading && !hasErrorLoading"
     />
-    <error-page-view
-      class="loadingView"
-      v-show="!isLoading && hasErrorLoading"
-    />
+    <ErrorPageView class="loadingView" v-show="!isLoading && hasErrorLoading" />
     <div class="ramContentView" v-show="!isLoading && !hasErrorLoading">
       <div class="topnav">
         <div class="logoNav">
-          <app-logo-icon class="logo" />
+          <AppLogoIcon class="logo" />
           <span class="text">Java Profiler</span>
         </div>
       </div>
@@ -21,7 +18,7 @@
             <p class="regionsTitle">Regions</p>
           </div>
           <div class="ramRegionsList">
-            <ram-regions-list :regions-list="regions" />
+            <RamRegionsListView :regions-list="regions" />
           </div>
         </div>
         <div class="ramBoardViewContainer">
@@ -29,7 +26,7 @@
             <span class="title">Memory (RAM)</span>
             <span class="size">{{ ramSize }} bytes</span>
           </div>
-          <ram-board-view class="ramBoardView" />
+          <RamBoardView class="ramBoardView" />
         </div>
         <div class="ramRegionsDataTypes">
           <p class="dataTypesTitle">Data Types</p>
@@ -68,8 +65,36 @@
 </template>
 
 <script>
+//Main Views
+import RamMainView from './RamMainView';
+import RamBoardView from './RamBoardView';
+import RamRegionsListView from './RamRegionsList';
+
+//extra
+import ErrorPageView from '../common/ErrorPageView';
+import MainLoadingView from '../common/MainLoadingView';
+
+//assets
+import AppLogoIcon from '../../assets/jprofiler_ram_icon';
+
+//Api Service
+import apiService from '../../services/api';
+
+//BoardManager
+import RamBoardManager from '../../shared/RamBoardManager';
+
+//event bus
+import _eventBus from '../../shared/event-bus';
+
 export default {
-  name: 'ram-main-view',
+  components: {
+    RamMainView,
+    RamBoardView,
+    RamRegionsListView,
+    MainLoadingView,
+    ErrorPageView,
+    AppLogoIcon,
+  },
   data: function () {
     return {
       mounted: false,
@@ -79,6 +104,8 @@ export default {
       ramSize: 0,
       isLoading: true,
       hasErrorLoading: false,
+      ApiService: {},
+      ramBoardManager: {},
     };
   },
 
@@ -90,6 +117,8 @@ export default {
   },
   mounted() {
     let self = this;
+    self.ramBoardManager = RamBoardManager;
+    self.ApiService = new apiService();
     self.fetchRamData();
     self.onRetryFetchData();
   },

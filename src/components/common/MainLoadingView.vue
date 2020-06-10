@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <loading-animation
+    <LoadingAnimation
       class="loadingAnimation"
       animation-duration="4000"
       color="#00b5c8"
@@ -8,7 +8,7 @@
     />
     <p class="loadingSubTitle">Getting Memory Data...</p>
     <div class="footer">
-      <app-logo-icon class="ramIcon" />
+      <AppLogoIcon class="ramIcon" />
       <span class="creator">Developed by: </span
       ><span class="creatorName"> Nilton Nhantumbo</span>
     </div>
@@ -16,7 +16,16 @@
 </template>
 
 <script>
-export default {};
+//assets
+import AppLogoIcon from '../../assets/jprofiler_ram_icon';
+import LoadingAnimation from '../../assets/loading_animation';
+
+export default {
+  components: {
+    LoadingAnimation,
+    AppLogoIcon,
+  },
+};
 </script>
 <style lang="css" scoped>
 .container {

@@ -2,7 +2,7 @@
   <div id="notfound">
     <div class="notfound">
       <div class="notfound-404">
-        <app-error-icon />
+        <AppErrorIcon />
       </div>
       <h2>Ooops...</h2>
       <p>
@@ -14,7 +14,16 @@
 </template>
 
 <script>
+//assets
+import AppErrorIcon from '../../assets/jprofiler_error_icon';
+
+//event bus
+import _eventBus from '../../shared/event-bus';
+
 export default {
+  components: {
+    AppErrorIcon,
+  },
   methods: {
     reloadPage() {
       _eventBus.$emit('fetch-mem-data');
