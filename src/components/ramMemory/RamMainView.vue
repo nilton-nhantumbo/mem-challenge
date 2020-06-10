@@ -137,6 +137,7 @@ export default {
           })
           .catch(
             (error) => (
+              console.log(error),
               console.log('Request Error' + error),
               (self.hasErrorLoading = true),
               (self.isLoading = false)
