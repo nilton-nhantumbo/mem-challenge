@@ -27,7 +27,7 @@
     "@babel/preset-env": "~7.3",
     "@vue/cli-plugin-unit-jest": "^4.4.1",
     "@vue/test-utils": "^1.0.3",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "babel-jest": "^26.0.1",
     "babel-loader": "~8.0",
     "compression-webpack-plugin": "~2.0",
